@@ -16,22 +16,23 @@ class DetectorTests(unittest.TestCase):
         src = "10.0.0.1"
 
         self.assertEqual(
-            detector.process_packet({"timestamp": 1, "src_ip": src, "dst_port": 80}),
+            detector.process_packet({"timestamp": 11, "src_ip": src, "dst_port": 80}),
             [],
         )
         self.assertEqual(
-            detector.process_packet({"timestamp": 2, "src_ip": src, "dst_port": 81}),
+            detector.process_packet({"timestamp": 12, "src_ip": src, "dst_port": 81}),
             [],
         )
-        alerts = detector.process_packet({"timestamp": 3, "src_ip": src, "dst_port": 82})
+        alerts = detector.process_packet({"timestamp": 13, "src_ip": src, "dst_port": 82})
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0]["attack_type"], "PORT_SCAN")
 
-        throttled = detector.process_packet({"timestamp": 4, "src_ip": src, "dst_port": 83})
+        throttled = detector.process_packet({"timestamp": 14, "src_ip": src, "dst_port": 83})
         self.assertEqual(throttled, [])
 
-        detector.process_packet({"timestamp": 14, "src_ip": src, "dst_port": 84})
-        alerted_again = detector.process_packet({"timestamp": 15, "src_ip": src, "dst_port": 85})
+        detector.process_packet({"timestamp": 24, "src_ip": src, "dst_port": 84})
+        detector.process_packet({"timestamp": 25, "src_ip": src, "dst_port": 85})
+        alerted_again = detector.process_packet({"timestamp": 26, "src_ip": src, "dst_port": 86})
         self.assertEqual(len(alerted_again), 1)
         self.assertEqual(alerted_again[0]["attack_type"], "PORT_SCAN")
 
@@ -43,7 +44,7 @@ class DetectorTests(unittest.TestCase):
 
         detector.process_packet(
             {
-                "timestamp": 1,
+                "timestamp": 11,
                 "src_ip": attacker,
                 "dst_ip": target,
                 "protocol": "TCP",
@@ -54,7 +55,7 @@ class DetectorTests(unittest.TestCase):
         )
         alerts = detector.process_packet(
             {
-                "timestamp": 2,
+                "timestamp": 12,
                 "src_ip": attacker,
                 "dst_ip": target,
                 "protocol": "TCP",
@@ -68,7 +69,7 @@ class DetectorTests(unittest.TestCase):
 
         detector.process_packet(
             {
-                "timestamp": 3,
+                "timestamp": 13,
                 "src_ip": target,
                 "dst_ip": attacker,
                 "protocol": "TCP",
@@ -84,9 +85,9 @@ class DetectorTests(unittest.TestCase):
         detector = Detector(config=config)
         src = "172.16.0.5"
 
-        detector.process_packet({"timestamp": 1, "src_ip": src, "protocol": "ICMP"})
-        detector.process_packet({"timestamp": 2, "src_ip": src, "protocol": "ICMP"})
-        alerts = detector.process_packet({"timestamp": 3, "src_ip": src, "protocol": "ICMP"})
+        detector.process_packet({"timestamp": 11, "src_ip": src, "protocol": "ICMP"})
+        detector.process_packet({"timestamp": 12, "src_ip": src, "protocol": "ICMP"})
+        alerts = detector.process_packet({"timestamp": 13, "src_ip": src, "protocol": "ICMP"})
 
         self.assertEqual(len(alerts), 1)
         self.assertEqual(alerts[0]["attack_type"], "ICMP_FLOOD")
